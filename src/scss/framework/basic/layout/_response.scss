@@ -1,8 +1,6 @@
 @mixin pad-screen {
   .top-header {
-    background: $header-brand-bg;
-    color: $gray-light;
-    .navbar-brand {
+    .brand {
       display: none;
     }
     .drawer {
@@ -31,7 +29,7 @@
   }
   .primary-sidebar {
     left: 0;
-    .navbar-brand {
+    .brand {
       display: block;
     }
   }
@@ -54,7 +52,7 @@
     margin-left: 0;
   }
   .top-header {
-    .navbar-brand {
+    .brand {
       display: none;
     }
   }
@@ -63,10 +61,6 @@
 .wrap {
   &.web-screen {
     @include web-screen;
-  }
-
-  @include breakpoint($pad) {
-    @include pad-screen;
   }
 
   &.pad-screen {

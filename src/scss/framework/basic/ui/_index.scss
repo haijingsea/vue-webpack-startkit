@@ -10,3 +10,7 @@
 @import "form";
 @import "tag";
 @import "divider";
+
+.flyout {
+  z-index: 2000;
+}

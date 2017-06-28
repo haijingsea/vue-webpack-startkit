@@ -3,21 +3,21 @@
   left: 0;
   top: 0;
   right: 0;
-  height: $header-height;
   z-index: 500;
   background: $header-bg;
 
   padding: 0;
 
-  .navbar-brand {
-    float: left;
+  & , .brand,  .navbar-nav {
+    height: $header-height;
+  }
+
+  .brand {
     width: $sidebar-width;
     line-height: $header-height;
-    background: $sidebar-bg;
-    text-align: center;
     font-size: 1rem;
-    margin: 0;
-    padding: 0;
+    text-align: center;
+    background: $sidebar-bg;
     &, a {
       color: $header-brand-color;
     }
@@ -35,14 +35,10 @@
   .handle {
     display: inline-block;
     padding: 0 .7rem;
-    height: $drawer-size;
-    line-height: $drawer-size;
     text-align: center;
-    background: $main-color;
-    color: #fff;
-    border-radius: 3px;
-    border: 1px solid darken($main-color, 1%);
+    color: $main-color;
     cursor: pointer;
+    @extend .font-size-20px;
     .icon {
       @include transition(transform 200ms ease);
     }
@@ -52,11 +48,10 @@
     position: relative;
     @extend .font-size-14px;
     .nav-item > a {
-      color: lighten($body-color, 30%);
       padding: 0 $spacing-small;
-      line-height: $header-height;
+      color: $body-color;
       &:hover {
-        color: $body-color;
+        color: darken($body-color, 10%);
       }
     }
 

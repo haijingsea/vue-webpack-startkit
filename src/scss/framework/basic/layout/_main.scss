@@ -24,9 +24,10 @@
 
 .main-toolbar {
   position: relative;
-  padding: $spacing-big $spacing $spacing-small;
-  //background: $toolbar-bg;
-  //border-bottom: 1px solid $toolbar-border-color;
+  padding: $spacer-y $spacer-x;
+  margin-bottom: .5rem;
+  background: $toolbar-bg;
+  box-shadow: 0px 0px 3px 0 rgba(0, 0, 0, .17);
   @include clearfix;
   .breadcrumb {
     position: absolute;
@@ -43,7 +44,7 @@
   }
 
   .page-title {
-    @extend .font-size-24px;
+    font-size: 1.25rem;
     margin-bottom: 0;
     color: $title-color;
     .icon {
@@ -56,9 +57,9 @@
     }
   }
 
-  .description {
-    @extend .font-size-12px;
-    margin-top: $spacing-micro;
+  .page-text {
+    @extend .font-size-14px;
+    margin-top: $spacing-small;
     margin-bottom: 0;
     color: $gray-light;
 
@@ -67,8 +68,7 @@
     }
   }
 
-  .primary-control, .primary-actions {
-    float: right;
+  .actions {
     .btn, .pointer {
       margin-left: $spacing-small;
     }

@@ -1,3 +1,8 @@
 .form-control {
   // font-size: 0.875rem;
 }
+
+input:-webkit-autofill {
+  background: none;
+  -webkit-box-shadow: 0 0 0 30px white inset;
+}

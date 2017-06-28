@@ -1,5 +1,6 @@
 $loading-cover-bg: rgba(255, 255, 255, 0.95) !default;
-$loading-cover-bar-size: 25px !default;
+$loading-cover-bar-width: 3px !default;
+$loading-cover-bar-size: 20px !default;
 $loading-cover-bar-color: #00b38a !default;
 
 
@@ -41,15 +42,17 @@ $loading-cover-bar-color: #00b38a !default;
     @extend .font-size-14px;
   }
   .loading-cover-bar {
-    animation-duration: .75s;
-    animation-iteration-count: infinite;
-    animation-name: rotate-forever;
-    animation-timing-function: linear;
+    display: inline-block;
+    box-sizing: border-box;
     width: $loading-cover-bar-size;
     height: $loading-cover-bar-size;
-    border: 5px solid $loading-cover-bar-color;
+    border: $loading-cover-bar-width solid $loading-cover-bar-color;
     border-right-color: transparent;
     border-radius: 50%;
-    display: inline-block;
+    transition: opacity 500ms ease-out;
+  }
+
+  .rotate-forever-revert {
+    opacity: .3;
   }
 }

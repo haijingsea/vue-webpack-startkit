@@ -1,68 +1,59 @@
 // see http://vuejs-templates.github.io/webpack for documentation.
-
-'use strict';
-const path = require('path');
-const fs = require('fs');
-const _ = require('lodash');
-const os = require('os');
-
-const manifestBasePath = '';
-const manifestProjectPath = '';
-
-const ifaces = os.networkInterfaces();
-
-let ipList = [];
-Object.keys(ifaces).forEach(function (ifname) {
-    var alias = 0;
-
-    ifaces[ifname].forEach(function (iface) {
-        if ('IPv4' !== iface.family || iface.internal !== false) {
-            // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
-            return;
-        }
-
-        if (alias >= 1) {
-            // this single interface has multiple ipv4 addresses
-            ipList.push(iface.address);
-        } else {
-            // this interface has only one ipv4 adress
-            ipList.push(iface.address);
-        }
-        ++alias;
-    });
-});
-
-const devPort = 9391;
-const localIp = ipList.find(d=>d.indexOf('192.168') == 0);
+const path = require('path')
 
 module.exports = {
-    srcDir: './src',
-    distDir: './dist',
-    buildDir: './src/build',
-	entry: {
-		template: './src/js/project/template/main.js',
-        vendor: ['./src/js/main.js', 'vue', 'vuex', 'vue-router', 'es6-promise', 'moment', 'jquery']
-	},
-	commonChunks: [{
-		name: 'vendor',
-		minChunks: 2,
-		chunks: ['vendor', 'template']
-	}, {
-        minChunks: Infinity,
-        names: ['vendor', 'manifest']
-    }],
-    build: {
-        assetsRoot: path.resolve(__dirname, '../src/build'),
-        assetsSubDirectory: 'js/',
-        productionSourceMap: false
-    },
-    dev: {
-        ip: localIp,
-        port: devPort,
-        publicPath: `http://${localIp}:${devPort}/dist/js/`,
-        proxyTable: {}
-    },
-	manifest: 'rev-manifest.json',
-    jspManifestProd: `${manifestBasePath}${manifestProjectPath}_manifest_prod.jsp`,
-    jspManifestDev: `${manifestBasePath}${manifestProjectPath}_manifest_dev.jsp`
-};
+  entry: {
+    app: './src/main'
+  },
+  commonChunks: [{
+    // split vendor js into its own file
+    name: 'vendor',
+    minChunks: function (module, count) {
+      // any required modules inside node_modules are extracted to vendor
+      return (
+        module.resource &&
+        /\.js$/.test(module.resource) &&
+        module.resource.indexOf(
+          path.join(__dirname, '../node_modules')
+        ) === 0
+      )
+    }
+  }, {
+    name: 'manifest',
+    chunks: ['vendor']
+  }],
+  build: {
+    env: require('./prod.env'),
+    index: path.resolve(__dirname, '../dist/index.html'),
+    assetsRoot: path.resolve(__dirname, '../dist'),
+    assetsSubDirectory: '',
+    assetsPublicPath: '/',
+    productionSourceMap: false,
+    // Gzip off by default as many popular static hosts such as
+    // Surge or Netlify already gzip all static assets for you.
+    // Before setting to `true`, make sure to:
+    // npm install --save-dev compression-webpack-plugin
+    productionGzip: false,
+    productionGzipExtensions: ['js', 'css'],
+    // Run the build command with an extra argument to
+    // View the bundle analyzer report after build finishes:
+    // `npm run build --report`
+    // Set to `true` or `false` to always turn it on or off
+    bundleAnalyzerReport: process.env.npm_config_report,
+    jspManifest: path.resolve(__dirname, '../manifest.jsp'),
+  },
+  dev: {
+    env: require('./dev.env'),
+    port: 9090,
+    autoOpenBrowser: false,
+    assetsSubDirectory: '',
+    assetsPublicPath: '/',
+    proxyTable: {},
+    // CSS Sourcemaps off by default because relative paths are "buggy"
+    // with this option, according to the CSS-Loader README
+    // (https://github.com/webpack/css-loader#sourcemaps)
+    // In our experience, they generally work as expected,
+    // just be aware of this issue when enabling this option.
+    cssSourceMap: false
+  }
+}

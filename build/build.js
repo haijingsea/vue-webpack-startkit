@@ -1,54 +1,35 @@
-// https://github.com/shelljs/shelljs
-require('shelljs/global');
-env.NODE_ENV = 'production';
+// require('./check-versions')()
 
-const _ = require('lodash');
-const path = require('path');
-const config = require('../config');
-const ora = require('ora');
-const webpack = require('webpack');
-const webpackConfig = require('./webpack.prod.conf');
-const fs = require('fs');
-const exec = require('child_process').exec;
+process.env.NODE_ENV = 'production'
 
-const spinner = ora('building for production...');
-spinner.start();
+const ora = require('ora')
+const rm = require('rimraf')
+const path = require('path')
+const chalk = require('chalk')
+const webpack = require('webpack')
+const config = require('../config')
+const webpackConfig = require('./webpack.prod.conf')
 
-const assetsPath = path.join(config.distDir, config.build.assetsSubDirectory);
-const buildPath = path.join(config.buildDir, config.build.assetsSubDirectory);
-const cssPath = path.join(config.distDir+'/css');
+const spinner = ora('building for production...')
+spinner.start()
 
-rm('-rf', buildPath);
-rm('-rf', assetsPath);
-rm('-rf', cssPath);
-mkdir('-p', buildPath);
+rm(path.join(config.build.assetsRoot, config.build.assetsSubDirectory), err => {
+  if (err) throw err
+  webpack(webpackConfig, function (err, stats) {
+    spinner.stop()
+    if (err) throw err
+    process.stdout.write(stats.toString({
+      colors: true,
+      modules: false,
+      children: false,
+      chunks: false,
+      chunkModules: false
+    }) + '\n\n')
 
-function moveVendor(){
-	let result = fs.readdirSync(config.buildDir);
-	_.some(result, f=>{
-		let stat = fs.statSync(path.join(config.buildDir, f));
-		if(stat.isFile() && /^vendor.*\.js$/.test(f)){
-			mv(path.join(config.buildDir, f), buildPath);
-			return true;
-		}
-	})
-}
-
-webpack(webpackConfig, function (err, stats) {
-	spinner.stop();
-	if (err) throw err;
-	process.stdout.write(stats.toString({
-			colors: true,
-			modules: false,
-			children: false,
-			chunks: false,
-			chunkModules: false
-		}) + '\n');
-
-	console.log('move vendor to  js dir');
-	moveVendor();
-
-	exec('npm run release', {cwd: path.join(__dirname, '../')}, function(err){
-		if(err) throw err;
-	})
-});
+    console.log(chalk.cyan('  Build complete.\n'))
+    console.log(chalk.yellow(
+      '  Tip: built files are meant to be served over an HTTP server.\n' +
+      '  Opening index.html over file:// won\'t work.\n'
+    ))
+  })
+})
