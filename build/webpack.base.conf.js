@@ -1,48 +1,79 @@
-const path = require('path');
-const utils = require('./utils');
-const config = require('../config');
-const webpack = require('webpack');
+const path = require('path')
+const utils = require('./utils')
+const config = require('../config')
+const vueLoaderConfig = require('./vue-loader.conf')
+const webpack = require('webpack')
+
+function resolve (dir) {
+  return path.join(__dirname, '..', dir)
+}
 
 module.exports = {
-    entry: config.entry,
-    output: {
-        path: path.resolve(__dirname, '../dist'),
-        publicPath: config.build.assetsPublicPath,
-        filename: '[name].js'
-    },
-    resolveLoader: {
-        root: path.join(__dirname, '../node_modules'),
-    },
-    module: {
-        loaders: [
-            {
-                test: /\.vue$/,
-                loader: 'vue'
-            }, {
-                test: /\.js$/,
-                loader: 'babel',
-                exclude: /node_modules/
-            }, {
-                test: /\.scss$/,
-                loader: 'scss-loader'
-            }, {
-                test: /\.(png|jpg|gif|svg)$/,
-                loader: 'url',
-                query: {
-                    limit: 10000,
-                    name: '[name].[ext]?[hash]'
-                }
-            }
-        ]
-    },
-    vue: {
-        loaders: utils.cssLoaders()
-    },
-    plugins: [
-        new webpack.optimize.CommonsChunkPlugin({
-            name: 'vendor',
-            filename: 'vendor-bundle.js'
-        }),
-        new webpack.IgnorePlugin(/vertx/)
+  entry: config.entry,
+  output: {
+    path: config.build.assetsRoot,
+    filename: '[name].js',
+    publicPath: process.env.NODE_ENV === 'production'
+      ? config.build.assetsPublicPath
+      : config.dev.assetsPublicPath
+  },
+  resolve: {
+    extensions: ['.js', '.vue', '.json'],
+    modules: ['node_modules', resolve('src')],
+    alias: {
+      'vue$': 'vue/dist/vue.esm.js',
+      'helper.js': 'helper.js/build/helper.js',
+      'moment-range': 'moment-range/dist/moment-range.js'
+    }
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(js|vue)$/,
+        loader: 'eslint-loader',
+        enforce: 'pre',
+        include: [resolve('src'), resolve('test')],
+        options: {
+          formatter: require('eslint-friendly-formatter')
+        }
+      },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader',
+        options: vueLoaderConfig
+      },
+      {
+        test: /\.js$/,
+        loader: 'babel-loader',
+        include: [resolve('src'), resolve('test')],
+        exclude: /node_modules/
+      },
+      {
+        test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+        loader: 'url-loader',
+        options: {
+          limit: 10000,
+          name: utils.assetsPath('img/[name].[hash:7].[ext]')
+        }
+      },
+      {
+        test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
+        loader: 'url-loader',
+        options: {
+          limit: 10000,
+          name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
+        }
+      }
     ]
-};
+  },
+  plugins: [
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery',
+      "window.jQuery": 'jquery',
+      Tether: 'tether',
+      echarts: 'echarts',
+    }),
+    new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh-cn/),
+  ]
+}

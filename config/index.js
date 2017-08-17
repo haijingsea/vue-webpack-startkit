@@ -1,35 +1,59 @@
 // see http://vuejs-templates.github.io/webpack for documentation.
-
-'use strict';
-const path = require('path');
-const fs = require('fs');
-const _ = require('lodash');
-
-const devPort = 9191;
-const productPort = 9192;
+const path = require('path')
 
 module.exports = {
-    srcDir: './src',
-    distDir: './dist',
-    buildDir: './src/build',
-	entry: {
-		template: './src/js/project/template/main.js',
-        vendor: ['vue', 'vuex', 'vue-router', 'es6-promise']
-	},
-	build: {
-		assetsRoot: path.resolve(__dirname, '../src/build'),
-		assetsSubDirectory: 'js/',
-		assetsPublicPath: `http://localhost:${devPort}/dist/js/`,
-		productionSourceMap: false
-	},
-	dev: {
-		port: devPort,
-		proxyTable: {}
-	},
-	product: {
-		port: productPort
-	},
-	manifest: 'rev-manifest.json',
-	jspManifestProd: 'D:/IdeaProjects/wifipix-bi-web/src/main/webapp/WEB-INF/views/common/inc/_manifest_prod.jsp',
-	jspManifestDev: 'D:/IdeaProjects/wifipix-bi-web/src/main/webapp/WEB-INF/views/common/inc/_manifest_dev.jsp'
-};
+  entry: {
+    app: './src/main'
+  },
+  commonChunks: [{
+    // split vendor js into its own file
+    name: 'vendor',
+    minChunks: function (module, count) {
+      // any required modules inside node_modules are extracted to vendor
+      return (
+        module.resource &&
+        /\.js$/.test(module.resource) &&
+        module.resource.indexOf(
+          path.join(__dirname, '../node_modules')
+        ) === 0
+      )
+    }
+  }, {
+    name: 'manifest',
+    chunks: ['vendor']
+  }],
+  build: {
+    env: require('./prod.env'),
+    index: path.resolve(__dirname, '../dist/index.html'),
+    assetsRoot: path.resolve(__dirname, '../dist'),
+    assetsSubDirectory: '',
+    assetsPublicPath: '/',
+    productionSourceMap: false,
+    // Gzip off by default as many popular static hosts such as
+    // Surge or Netlify already gzip all static assets for you.
+    // Before setting to `true`, make sure to:
+    // npm install --save-dev compression-webpack-plugin
+    productionGzip: false,
+    productionGzipExtensions: ['js', 'css'],
+    // Run the build command with an extra argument to
+    // View the bundle analyzer report after build finishes:
+    // `npm run build --report`
+    // Set to `true` or `false` to always turn it on or off
+    bundleAnalyzerReport: process.env.npm_config_report,
+    jspManifest: path.resolve(__dirname, '../manifest.jsp'),
+  },
+  dev: {
+    env: require('./dev.env'),
+    port: 9090,
+    autoOpenBrowser: false,
+    assetsSubDirectory: '',
+    assetsPublicPath: '/',
+    proxyTable: {},
+    // CSS Sourcemaps off by default because relative paths are "buggy"
+    // with this option, according to the CSS-Loader README
+    // (https://github.com/webpack/css-loader#sourcemaps)
+    // In our experience, they generally work as expected,
+    // just be aware of this issue when enabling this option.
+    cssSourceMap: false
+  }
+}

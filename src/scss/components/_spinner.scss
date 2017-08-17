@@ -1,0 +1,11 @@
+.rotate-spinner {
+  display: inline-block;
+  box-sizing: border-box;
+  width: .75rem;
+  height: .75rem;
+  border: .05rem solid #00b38a;
+  border-right-color: transparent;
+  border-radius: 50%;
+  transition: opacity 500ms ease-out;
+  vertical-align: middle;
+}
